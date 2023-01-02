@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modale gallery delete</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    
+    <aside class="modale  flex-c-c  hidden" id="modale_add_works">
+        <div class="modale__wrapper  flex-c-c">
+
+            <h2 style="margin: 50px 0">Ajout photo</h2>
+
+            <div class="modale__add-works--photo-wrapper  flex-c-c">
+                <div class="modale__add-works--icon-wrapper">
+                    <i class="fa-solid fa-mountain-sun"></i>
+                </div>
+                <label for="file_input"  class="btn  grey-theme  modale__btn--add  flex-c-c" id="file_label">
+                    + Ajouter photo
+                    <input type="file" id="file_input" name="file_input" accept="image/png, image/jpeg" class="hidden">
+                </label>
+                <p class="modale__add-works--p">jpg, png : 4mo max</p>
+            </div>
+
+            <form action="#" class="modale_add-works--form  flex-c-c">
+                <div class="modale__input-wrapper">
+                    <label for="title" class="modale__label">Titre</label>
+                    <input type="text" name="title" id="title" class="modale__input">
+                </div>
+                <div class="modale__input-wrapper">
+                    <label for="category" class="modale__label">Catégorie</label>
+                    <select name="category" id="category" class="modale__input"></select>
+                </div>
+
+                <hr class="modale__add-works--hr" style="width: 100%">
+                <input type="submit" value="Valider" class="btn  modale__btn--validate  grey-theme--activated" id="modale_submit">
+                <!-- <button type="submit" class="btn  modale__btn--validate  grey-theme--activated">Valider</button> -->
+            </form>
+            
+            
+            <button class="modale__btn--cross  modale__btn--absolute  flex-c-c">
+                <i class="fa-xmark  fa-solid"></i>
+            </button>
+
+            <button class="modale__btn--arrow  modale__btn--absolute   flex-c-c">
+                <i class="fa-arrow-left  fa-solid"></i>
+            </button>
+
+
+        </div>
+    </aside>
+</body>
+</html>

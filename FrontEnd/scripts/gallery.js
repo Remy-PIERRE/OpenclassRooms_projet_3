@@ -27,10 +27,10 @@ export const gallery_init = await (async function () {
 
     async function fetch_works() {
     /* return res.json() || res.name == TypeError || res.status != 200 */
-        var url = 'http://localhost:5678/api/works';
+        let url = 'http://localhost:5678/api/works';
 
         try{
-            var response = await fetch(url);
+            let response = await fetch(url);
             if(response.ok) {
                 response = await response.json();
             }
@@ -88,7 +88,6 @@ if(gallery_init && !sessionStorage['jwt']) {
 if(gallery_init && sessionStorage['jwt']) {
     import(module_edit_mode)
 }
-
 
 
 

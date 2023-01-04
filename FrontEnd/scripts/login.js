@@ -61,8 +61,7 @@ export const login_listener = (async function () {
             let response = await fetch(fetch_url, fetch_options);
             response = await response.json();
 
-            if(response.message) { return auth_failed({ msg: 'Utilisateur introuvable !' }) }
-            if(response.error) { return auth_failed({ msg: 'Mauvais mot de passe !' }) }
+            if(response.message || response.error) { return auth_failed({ msg: "Erreur dans l’identifiant ou le mot de passe !" }) }
             sessionStorage.setItem('jwt', response.token);
             const redirection_url = window.location.href.replace('#contact', '');
             window.location.href = redirection_url.replace('html/login', 'index');

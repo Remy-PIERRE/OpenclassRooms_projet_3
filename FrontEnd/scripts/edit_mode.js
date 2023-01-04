@@ -1,9 +1,16 @@
-const module_modale = './modale_refact.js';
+const module_modale = './modale.js';
 const module_update = './update.js';
 
 export const edit_mode_init = (function() {
     banner_init();
     btns_modifier_init();
+
+    /* delete and add works reset on window.unload */
+    window.addEventListener('beforeunload', () => {
+        (sessionStorage['delete']) ? sessionStorage.removeItem('delete') : null;
+        (sessionStorage['add']) ? sessionStorage.removeItem('add') : null;
+        (window.add_works) ? delete window.add_works : null;
+    })
 })()
 
 

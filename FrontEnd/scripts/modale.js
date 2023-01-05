@@ -84,6 +84,7 @@ function modale_gallery_display() {
         figcaption.innerText = 'editer';
         figcaption.style.fontSize = '12px';
         figcaption.style.lineHeight = '14px';
+        figcaption.style.cursor = 'pointer';
 
         btn_trash.className = 'modale__btn--trash  flex-c-c';
         icon_trash.className = 'fa-trash-can  fa-solid';
@@ -142,28 +143,25 @@ function modale_listener() {
     modale.addEventListener('click', modale_listener_handler);
 
     /* cross arrows */
-    // if(modale.id === 'modale_gallery') {
-    //     [...modale.querySelectorAll('.modale__gallery--figure')].map(figure => {
+    if(modale.id === 'modale_gallery') {
+        [...modale.querySelectorAll('.modale__gallery--figure')].map(figure => {
 
-    //         const cross_icon_wrapper = document.createElement('div');
-    //         cross_icon_wrapper.className = 'modale-gallery__figure--btn-cross  flex-c-c';
-    //         const cross_icon = document.createElement('i');
-    //         cross_icon.className = 'fa-solid fa-up-down-left-right';
-    //         cross_icon.style.color = '#fff';
-    //         cross_icon.style.fontSize = '12px';
-    //         cross_icon_wrapper.appendChild(cross_icon);
+            const cross_icon_wrapper = document.createElement('div');
+            cross_icon_wrapper.className = 'modale-gallery__figure--btn-cross  flex-c-c';
+            const cross_icon = document.createElement('i');
+            cross_icon.className = 'fa-solid fa-up-down-left-right';
+            cross_icon.style.color = '#fff';
+            cross_icon.style.fontSize = '12px';
+            cross_icon_wrapper.appendChild(cross_icon);
 
-    //         figure.addEventListener('mouseover', () => {
-    //             figure.appendChild(cross_icon_wrapper);
-    //             cross_icon_wrapper.style.display = 'flex';
-    //         })
-    //         figure.addEventListener('mouseout', () => {
-    //             figure.appendChild(cross_icon_wrapper);
-    //             cross_icon_wrapper.style.display = 'none';
-    //         })
-                
-    //     })
-    // }
+            figure.querySelector('figcaption').addEventListener('click', () => {
+                (modale.querySelector('.modale-gallery__figure--btn-cross')) ? 
+                modale.querySelector('.modale-gallery__figure--btn-cross').remove() : null;
+                figure.appendChild(cross_icon_wrapper);
+                cross_icon_wrapper.style.display = 'flex';
+            })
+        })
+    }
 
 
     function modale_listener_handler(event) {
@@ -323,7 +321,6 @@ function modale_add_works_file_get(target) {
 }
 
 function modale_add_works_file_switch(reset = false) {
-    console.log('modale_add file_switch enter');
 /* reset = TRUE when going to previous modale : dunnot need to keed <img> and file.value */
     const wrapper = document.querySelector('.modale__add-works--photo-wrapper');
     if(reset) {
@@ -351,14 +348,11 @@ async function modale_add_works_submit() {
     formData.append('title', title);
     formData.append('category', category.split('_')[1]);
 
-    const test =  await modale_add_works_add(formData);
-    console.log('test', test);
-    return test;
+    return await modale_add_works_add(formData);
 }
 
 async function modale_add_works_failed() {
     /* 2s <error_msg> display */
-    console.log('enter display failed');
     const error_msg = document.createElement('p');
     error_msg.className = 'msg--error';
     error_msg.innerText = 'Tous les champs doivent être remplis !';
@@ -367,7 +361,6 @@ async function modale_add_works_failed() {
     title.appendChild(error_msg);
 
     setTimeout(() => {
-        console.log('enter set timeout');
         error_msg.remove()
         return false;
     }, 2000)

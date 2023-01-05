@@ -1,4 +1,5 @@
 const module_modale_error = './modale_error.js';
+const module_gallery = './gallery.js';
 
 
 
@@ -46,55 +47,19 @@ async function modale_init() {
         }
         catch(error) {
             (document.querySelector(`#${modale_to_create}`)) ? document.querySelector(`#${modale_to_create}`).remove() : null;
-            // (!document.querySelector('#modale_error')) ? modale_error_display() : null }
             (!document.querySelector('#modale_error')) ? await import(module_modale_error).then(__ => __.modale_error_init()) : null;
         }
     }
-
-    // function modale_error_display() {
-    //     /* create error_modale then switch() to display it */
-    //     const modale_error = document.createElement('aside');
-    //     const modale_error_wrapper = document.createElement('div');
-    //     const modale_error_text = document.createElement('p');
-    //     const btn_cross = document.createElement('button');
-    //     const icon_cross = document.createElement('i');
-
-    //     /* create <btn_arrow> if already modale to go back to previous one */
-    //     if(document.querySelector('.modale ')) {
-    //         const btn_arrow = document.createElement('button');
-    //         const icon_arrow = document.createElement('i');
-
-    //         btn_arrow.className = 'modale__btn--arrow  modale__btn--absolute   flex-c-c';
-    //         icon_arrow.className = 'fa-arrow-left  fa-solid';
-
-    //         btn_arrow.appendChild(icon_arrow);
-    //         modale_error_wrapper.appendChild(btn_arrow);
-    //     }
-
-    //     /* id / clases / style */
-    //     btn_cross.className = 'modale__btn--cross  modale__btn--absolute  flex-c-c';
-    //     icon_cross.className = 'fa-xmark  fa-solid';
-    //     modale_error.className = 'modale  flex-c-c  hidden';
-    //     modale_error.id = 'modale_error';
-    //     modale_error_wrapper.className = 'modale__wrapper  flex-c-c';
-    //     modale_error_wrapper.style.height = '200px';
-    //     modale_error_wrapper.style.width = '300px';
-    //     modale_error_text.className = 'msg--error';
-    //     modale_error_text.innerText = 'Erreur lors du chargement de la modale !';
-
-    //     /* childrens assign */
-    //     btn_cross.appendChild(icon_cross);
-    //     modale_error_wrapper.appendChild(btn_cross);
-    //     modale_error_wrapper.appendChild(modale_error_text);
-    //     modale_error.appendChild(modale_error_wrapper);
-    //     document.body.appendChild(modale_error);
-    // }
 }
 
 function modale_gallery_display() {
 /* create a clone of any <figure> in <gallery> then transform then put in <modale_gallery_wrapper> */
     const gallery_figures = [...document.querySelectorAll('.gallery__figure')];
     const gallery_wrapper = document.querySelector('.modale__gallery--wrapper');
+
+    /* gallery empty => stop, modale_gallery not empty => reset then fill modale_gallery */
+    // if(gallery_figures.length === 0) { return /* to be implemented : empty gallery msg */  }
+    if([...gallery_wrapper.querySelectorAll('figure')].length > 0) { modale_gallery_reset() }
     gallery_figures.map(figure => { clone_create(figure) })
 
 
@@ -123,23 +88,39 @@ function modale_gallery_display() {
         btn_trash.className = 'modale__btn--trash  flex-c-c';
         icon_trash.className = 'fa-trash-can  fa-solid';
     }
+
+    function modale_gallery_reset() {
+        while(gallery_wrapper.firstChild) { gallery_wrapper.firstChild.remove() }
+    }
 }
 
-function modale_add_works_select() {
+async function modale_add_works_select() {
+    const categories = await fetch_categories();
+
     const modale_select = document.querySelector('#category');
-    const option_categories = [...new Set([...document.querySelectorAll('.gallery__figure')].map(figure => figure.getAttribute('data-category')))];
-    const option_categories_id = [...new Set([...document.querySelectorAll('.gallery__figure')].map(figure => figure.getAttribute('data-category_id')))];
-    for(let i = 0; i < option_categories.length; i++) {
-        option_create(option_categories[i], option_categories_id[i]);
-    }
+    categories.map(category => {
+        option_create(category)
+    })
 
-
-    function option_create(category, category_id) {
+    function option_create(category) {
         const option = document.createElement('option');
-        option.value = `${category}_${category_id}`;
-        option.innerText = category;
+        option.value = `${category.name}_${category.id}`;
+        option.innerText = category.name;
         option.className = 'modale__select--option';
         modale_select.appendChild(option);
+    }
+
+    async function fetch_categories() {
+        const url = 'http://localhost:5678/api/categories';
+        try {
+            const fetched_data = await fetch(url);
+            if(!fetched_data.ok) { return console.log('fetch categories not ok', fetched_data.status);}
+            return await fetched_data.json();
+        }
+        catch(error) {
+            console.log('fetch categories error');
+            return
+        }
     }
 }
 
@@ -160,6 +141,30 @@ function modale_listener() {
     /* need callback() to prevent eventListener multiplication */
     modale.addEventListener('click', modale_listener_handler);
 
+    /* cross arrows */
+    // if(modale.id === 'modale_gallery') {
+    //     [...modale.querySelectorAll('.modale__gallery--figure')].map(figure => {
+
+    //         const cross_icon_wrapper = document.createElement('div');
+    //         cross_icon_wrapper.className = 'modale-gallery__figure--btn-cross  flex-c-c';
+    //         const cross_icon = document.createElement('i');
+    //         cross_icon.className = 'fa-solid fa-up-down-left-right';
+    //         cross_icon.style.color = '#fff';
+    //         cross_icon.style.fontSize = '12px';
+    //         cross_icon_wrapper.appendChild(cross_icon);
+
+    //         figure.addEventListener('mouseover', () => {
+    //             figure.appendChild(cross_icon_wrapper);
+    //             cross_icon_wrapper.style.display = 'flex';
+    //         })
+    //         figure.addEventListener('mouseout', () => {
+    //             figure.appendChild(cross_icon_wrapper);
+    //             cross_icon_wrapper.style.display = 'none';
+    //         })
+                
+    //     })
+    // }
+
 
     function modale_listener_handler(event) {
     /* works for all modales */
@@ -177,7 +182,6 @@ function modale_listener() {
             case 'modale_error':
             case 'modale__btn--cross':
             case 'fa-xmark':
-            case 'modale':
                 modale_close();
                 break;
 
@@ -200,12 +204,14 @@ function modale_listener() {
             /* delete work from modale_gallery */
             case 'modale__btn--trash':
             case 'fa-trash-can':
-                modale_remove_work(target);
+                modale_remove_work(target)
+                    .then(__ => galleries_update())
                 break;
             
             /* delete all works from modale_gallery */
             case 'modale__btn--del-all':
-                modale_remove_all_works();
+                modale_remove_all_works()
+                    .then(__ => galleries_update())
                 break;
 
             /* get and display image loaded */
@@ -216,8 +222,15 @@ function modale_listener() {
 
             /* check if form is full then file go in global var => use in './update.js' */
             case 'modale_submit':
-                const submit = modale_add_works_submit();
-                (submit) ? modale.removeEventListener('click', modale_listener_handler) : null;
+                modale_add_works_submit()
+                    .then(is_added => {
+                        if(is_added) {
+                            galleries_update();
+                            modale_add_works_file_switch(true);
+                            modale_switch();
+                            modale.removeEventListener('click', modale_listener_handler);
+                        } 
+                    })
 
             default:
                 break;
@@ -232,33 +245,54 @@ function modale_listener() {
 
 /* modale_gallery */
 
-function modale_remove_all_works() {
+async function modale_remove_all_works() {
 /* call modale_remove_work() for all works */
     const modale_gallery = document.querySelector('.modale__gallery--wrapper');
     const figures = [...modale_gallery.querySelectorAll('figure')];
 
-    figures.map(figure => modale_remove_work(figure))
+    figures.map(async(figure) => await modale_remove_work(figure))
 }
 
-function modale_remove_work(element) {
-    /* to be sure to get <figure> to works */
-    /* <i trash> need to be children of <figure> */
+async function modale_remove_work(element) {
+    /* need element === <figure> to works, <i trash> is children of <figure> */
     while(element.tagName.toLowerCase() !== 'figure') {element = element.parentElement}
     const figure = element;
 
-    /* remove() <figure> clone from <gallery> then <figure> itself */
-    const work_name = figure.querySelector('img').alt;
-    const work_category = figure.getAttribute('data-category');
-    const work_id = figure.getAttribute('data-id');
-    [...document.querySelector('.gallery').querySelectorAll('figure')].map(figure => {
-        (figure.querySelector('img').alt === work_name) ? figure.remove() : null
-    })
-    figure.remove();
+    /* fetch delete, figure.getAttribute('data-id') === work id on api */
+    const work_deleted = await fetch_delete_work(figure.getAttribute('data-id'));
 
-    /* don't loose your modifications */
-    /* ' __ ' is séparator here to prevent errors, ', ' use in work_name */
-    storage_modifications('delete', `${work_name} __ ${work_category} __ ${work_id}`);
+    if(!work_deleted) {
+        return fetch_failed();
+    }
 }
+
+async function fetch_delete_work(work_id) {
+    const url = `http://localhost:5678/api/works/${work_id}`;
+    const fetch_options = {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `bearer ${sessionStorage['jwt']}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }
+
+    try {
+        const fetched_data = await fetch(url, fetch_options);
+        if(!fetched_data.ok) { 
+            console.log(`Echec du fetch delete id: ${work_id}, status : `, fetched_data.status);
+            return false;
+        }
+        console.log(`Réussite du fetch delete id: ${work_id}, status : `, fetched_data.status);
+        return true;
+    }
+    catch(error) {
+        console.log(`Echec du fetch delete id: ${work_id}, error : `, error);
+        return false;
+    }
+}
+
+
 
 
 
@@ -289,6 +323,7 @@ function modale_add_works_file_get(target) {
 }
 
 function modale_add_works_file_switch(reset = false) {
+    console.log('modale_add file_switch enter');
 /* reset = TRUE when going to previous modale : dunnot need to keed <img> and file.value */
     const wrapper = document.querySelector('.modale__add-works--photo-wrapper');
     if(reset) {
@@ -298,6 +333,8 @@ function modale_add_works_file_switch(reset = false) {
     [...wrapper.children].map(child => child.classList.toggle('hidden'));
 }
 
+
+
 async function modale_add_works_submit() {
     const file = document.querySelector('#file_input').files[0];
     const title = document.querySelector('#title').value;
@@ -305,7 +342,7 @@ async function modale_add_works_submit() {
 
     /* all fields need value */
     if(!(file && title && category)) {
-        return modale_add_works_failed();
+        return await modale_add_works_failed();
     }
 
     /* fetch will need file in body => formData will handle it */
@@ -314,34 +351,61 @@ async function modale_add_works_submit() {
     formData.append('title', title);
     formData.append('category', category.split('_')[1]);
 
-    /* formData in global variable because use it in './update.js' and sessionStorage => JSON.stringify(formData) dunnot works */
-    (window.add_works) ? window.add_works.push(formData) : window.add_works = [formData];
-
-    /* keep info for modale_info at './update.js' */
-    storage_modifications('add', `${title} __ ${category.split('_')[0]}`);
-
-    /* go back to previous modale, reset modale_add_works, ready to get another submit, return TRUE => kill eventListener */
-    modale_add_works_file_switch(true);
-    modale_switch();
-    return true;
-
-
-
-    function modale_add_works_failed() {
-    /* 2s >error_msg> display */
-        const error_msg = document.createElement('p');
-        error_msg.className = 'msg--error';
-        error_msg.innerText = 'Tous les champs doivent être remplis !';
-        const title = document.querySelector('#modale_add_works').querySelector('.modale__wrapper');
-
-        title.appendChild(error_msg);
-
-        setTimeout(() => {
-            error_msg.remove()
-        }, 2000)
-    }
+    const test =  await modale_add_works_add(formData);
+    console.log('test', test);
+    return test;
 }
 
+async function modale_add_works_failed() {
+    /* 2s <error_msg> display */
+    console.log('enter display failed');
+    const error_msg = document.createElement('p');
+    error_msg.className = 'msg--error';
+    error_msg.innerText = 'Tous les champs doivent être remplis !';
+    const title = document.querySelector('#modale_add_works').querySelector('.modale__wrapper');
+
+    title.appendChild(error_msg);
+
+    setTimeout(() => {
+        console.log('enter set timeout');
+        error_msg.remove()
+        return false;
+    }, 2000)
+}
+
+async function modale_add_works_add(formData) {
+     const work_added = await fetch_add_work(formData);
+
+     if(!work_added) {
+         return fetch_failed();
+     }
+     return work_added;
+}
+
+async function fetch_add_work(formData) {
+    const url = `http://localhost:5678/api/works`;
+    const fetch_options = {
+        method: 'POST',
+        headers: {
+            'Authorization': `bearer ${sessionStorage['jwt']}`,
+        },
+        body: formData
+    }
+    
+        try {
+            const fetched_data = await fetch(url, fetch_options);
+            if(!fetched_data.ok) {
+                console.log(`Echec du fetch add: ${formData.get('title')}, status : `, fetched_data.status);
+                return false;
+            }
+            console.log(`Réussite du fetch add: ${formData.get('title')}, status : `, fetched_data.status);
+                return true;
+        }
+        catch(error) {
+            console.log(`Echec du fetch add: ${formData.get('title')}, error : `, error);
+            return false;
+        }
+}
 
 
 /* all modales */
@@ -350,10 +414,12 @@ function modale_close() {
     document.querySelectorAll('.modale').forEach(modale => { modale.remove() })
 }
 
-function storage_modifications(category, value) {
-/* store delete / add works in sessionStorage => use in './update.js' */
-    if(!sessionStorage[category]) {
-        return sessionStorage.setItem(category, value);
-    }
-    sessionStorage[category] += (` ___ ${value}`);
+async function galleries_update() {
+    import(module_gallery)
+        .then(__ => __.gallery_display())
+        .then(__ => modale_gallery_display())
+}
+
+function fetch_failed() {
+    /* under construction */
 }

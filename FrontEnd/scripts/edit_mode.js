@@ -55,7 +55,8 @@ function banner_init() {
 }
 
 async function banner_listener() {
-    document.querySelector('#banner_publier').addEventListener('click', () => { import(module_update).then(__ => __.update_init()) })
+    // document.querySelector('#banner_publier').addEventListener('click', () => { import(module_update).then(__ => __.update_init()) })
+    /* to be implemented */
 }
 
 

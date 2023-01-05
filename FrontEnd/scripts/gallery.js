@@ -3,7 +3,25 @@ const module_edit_mode = './edit_mode.js';
 
 
 
-export const gallery_init = await (async function () {
+export const gallery_init = await (async function() {
+    /* gallery_display fetch => return true / false */
+    const is_gallery_init = await gallery_display()
+
+    /* both 2 next conditions require is_gallery_init == TRUE */
+    /* filters display require not loged in */
+    if(is_gallery_init && !sessionStorage['jwt']) {
+        import(module_filters)
+    }
+
+    /* edition_mode require loged in */
+    if(is_gallery_init && sessionStorage['jwt']) {
+        import(module_edit_mode)
+    }
+
+})()
+
+
+export async function gallery_display() {
 /* return TRUE / FALSE == filters or edition_mode dunnot need to run without api not responding */
 
     /* dell showcase */
@@ -76,18 +94,8 @@ export const gallery_init = await (async function () {
         figure.appendChild(figcaption);
         gallery.appendChild(figure);
     }
-})()
-
-/* both 2 next conditions require gallery_init == TRUE */
-/* filters display require not loged in */
-if(gallery_init && !sessionStorage['jwt']) {
-    import(module_filters)
 }
 
-/* edition_mode require loged in */
-if(gallery_init && sessionStorage['jwt']) {
-    import(module_edit_mode)
-}
 
 
 

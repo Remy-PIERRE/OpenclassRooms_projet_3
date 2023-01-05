@@ -376,19 +376,7 @@ footer nav ul {
 .modale__gallery--figure > img {
 	width: 100%;
 }
-.modale__btn--trash {
-	position: absolute;
-	font-size: 10px;
-	font-weight: 100;
-	color: #000;
-	text-shadow:
-		-1px -1px 0 #fff,
-		1px -1px 0 #fff,
-		-1px 1px 0 #fff,
-		1px 1px 0 #fff;
-		top: 3px;
-		right: 3px;
-}
+
 .modale__add-works--photo-wrapper {
 	height: 170px;
 	width: 420px;
@@ -485,4 +473,32 @@ footer nav ul {
 .modale__update--text-wrapper {
 	margin: 15px 0;
 	width: 100%;
+}
+.modale-gallery__figure--btn-cross {
+	height: 18px;
+	width: 18px;
+	background-color: #000;
+	position: absolute;
+	top: 3px;
+	right: 24px;
+	border-radius: 2px;
+}
+.modale__btn--trash {
+	position: absolute;
+	font-size: 10px;
+	font-weight: 100;
+	background-color: #000;
+	border-radius: 2px;
+	/* text-shadow:
+		-1px -1px 0 #fff,
+		1px -1px 0 #fff,
+		-1px 1px 0 #fff,
+		1px 1px 0 #fff; */
+	top: 3px;
+	right: 3px;
+	height: 18px;
+	width: 18px;
+}
+.fa-trash-can {
+	color: #fff;
 }

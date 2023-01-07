@@ -22,6 +22,7 @@ export const gallery_init = await (async function() {
 
 
 export async function gallery_display() {
+    console.log('enter gallery display');
 /* return TRUE / FALSE == filters or edition_mode dunnot need to run without api not responding */
 
     /* dell showcase */

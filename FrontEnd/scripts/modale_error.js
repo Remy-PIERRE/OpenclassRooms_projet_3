@@ -1,12 +1,10 @@
 export const modale_error_init = function() {
-    console.log('entrée dans modale_error');
     (!document.querySelector('#modale_error')) ? modale_error_create() : null;
 }
 
 
 
 function modale_error_create() {
-    console.log('create modale_error');
     /* create error_modale then switch() to display it */
     const modale_error = document.createElement('aside');
     const modale_error_wrapper = document.createElement('div');

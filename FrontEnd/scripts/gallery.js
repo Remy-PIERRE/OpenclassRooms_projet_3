@@ -17,12 +17,10 @@ export const gallery_init = await (async function() {
     if(is_gallery_init && sessionStorage['jwt']) {
         import(module_edit_mode)
     }
-
 })()
 
 
 export async function gallery_display() {
-    console.log('enter gallery display');
 /* return TRUE / FALSE == filters or edition_mode dunnot need to run without api not responding */
 
     /* dell showcase */
@@ -77,6 +75,7 @@ export async function gallery_display() {
     /* each work (<figure> => <img> && <figcaption>) is display in <gallery> */
         const gallery = document.querySelector('.gallery');
 
+        /* storing fetched_works data in (data_category, data-category_id, data-id), needed in filters, modale_gallery and modale_add_works */
         const figure = document.createElement('figure');
         figure.className = 'gallery__figure';
         figure.setAttribute('data-category', (work.category.name).toLowerCase())

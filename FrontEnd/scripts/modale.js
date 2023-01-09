@@ -3,15 +3,7 @@ const module_gallery = './gallery.js';
 
 
 
-export const modale = async function() {
-
-    modale_init();
-}
-
-
-
-
-async function modale_init() {
+export async function modale_init() {
 
     /* (if not exists create <modale_gallery> || create <modale_add_works> ) || switch between modales */
     (!document.querySelector('#modale_add_works')) ? 
@@ -46,6 +38,7 @@ async function modale_init() {
             (modale_to_insert.id === 'modale_add_works') ? modale_add_works_select() : null;
         }
         catch(error) {
+            /* delete modale if already created and remplace it with <modale_error> */
             (document.querySelector(`#${modale_to_create}`)) ? document.querySelector(`#${modale_to_create}`).remove() : null;
             (!document.querySelector('#modale_error')) ? await import(module_modale_error).then(__ => __.modale_error_init()) : null;
         }
@@ -58,7 +51,6 @@ function modale_gallery_display() {
     const gallery_wrapper = document.querySelector('.modale__gallery--wrapper');
 
     /* gallery empty => stop, modale_gallery not empty => reset then fill modale_gallery */
-    // if(gallery_figures.length === 0) { return /* to be implemented : empty gallery msg */  }
     if([...gallery_wrapper.querySelectorAll('figure')].length > 0) { modale_gallery_reset() }
     gallery_figures.map(figure => { clone_create(figure) })
 
@@ -90,28 +82,35 @@ function modale_gallery_display() {
         icon_trash.className = 'fa-trash-can  fa-solid';
     }
 
+    /* delete all <figures> in modale_gallery */
     function modale_gallery_reset() {
         while(gallery_wrapper.firstChild) { gallery_wrapper.firstChild.remove() }
     }
 }
 
 async function modale_add_works_select() {
+    /* get all categories then create <options> with thoses */
     const categories = await fetch_categories();
 
     const modale_select = document.querySelector('#category');
-    categories.map(category => {
-        option_create(category)
-    })
+    if(categories) {
+        categories.map(category => {
+            option_create(category)
+        })
+    }
+    
 
     function option_create(category) {
+        /* create <option> */
         const option = document.createElement('option');
-        option.value = `${category.name}_${category.id}`;
+        option.value = category.id;
         option.innerText = category.name;
         option.className = 'modale__select--option';
         modale_select.appendChild(option);
     }
 
     async function fetch_categories() {
+        /* fetch all categories */
         const url = 'http://localhost:5678/api/categories';
         try {
             const fetched_data = await fetch(url);
@@ -142,7 +141,7 @@ function modale_listener() {
     /* need callback() to prevent eventListener multiplication */
     modale.addEventListener('click', modale_listener_handler);
 
-    /* cross arrows */
+    /* cross arrows in modale gallery, display only => to be implemented */
     if(modale.id === 'modale_gallery') {
         [...modale.querySelectorAll('.modale__gallery--figure')].map(figure => {
 
@@ -165,14 +164,14 @@ function modale_listener() {
 
 
     function modale_listener_handler(event) {
-    /* works for all modales */
+    /* works for all modales (modale_gallery, modale_add_works, modale_error */
 
         const target = event.target;
         /* <input> type='file' dunnot wants preventDefault() */
         (['file_label', 'file_input'].includes(target.id)) ? null : event.preventDefault();
 
         switch(target.id || target.classList[0]) {
-        /* beware <i> needs classes inverted : class='fa-solid  fa-xmark' => class='fa-xmark  fa-solid', switch searching for first class */
+        /* beware <i> needs classes inverted : class='fa-solid  fa-xmark' => class='fa-xmark  fa-solid', switch searching for first class, here 'fa-xmark' */
 
             /* close all modales */
             case 'modale_gallery':
@@ -218,10 +217,11 @@ function modale_listener() {
                 modale_add_works_file_get(target);
                 break;
 
-            /* check if form is full then file go in global var => use in './update.js' */
+            /* check if form is full then fetch (return true / false) */
             case 'modale_submit':
                 modale_add_works_submit()
                     .then(is_added => {
+                        /* if true update gallery, modale_gallery and return to modale_gallery */
                         if(is_added) {
                             galleries_update();
                             modale_add_works_file_switch(true);
@@ -241,7 +241,7 @@ function modale_listener() {
 /* modale_listener() functions */
 
 
-/* modale_gallery */
+/* MODALE_GALLERY */
 
 async function modale_remove_all_works() {
 /* call modale_remove_work() for all works */
@@ -252,6 +252,7 @@ async function modale_remove_all_works() {
 }
 
 async function modale_remove_work(element) {
+    /* element is <i trash> ('click' on <i trash>) or <figure> (delete all works) */
     /* need element === <figure> to works, <i trash> is children of <figure> */
     while(element.tagName.toLowerCase() !== 'figure') {element = element.parentElement}
     const figure = element;
@@ -294,7 +295,7 @@ async function fetch_delete_work(work_id) {
 
 
 
-/* modale_add_works */
+/* MODALE_ADD_WORKS */
 
 function modale_add_works_file_get(target) {
 
@@ -302,7 +303,7 @@ function modale_add_works_file_get(target) {
     target.addEventListener('change', modale_file_listener_handler)
     
     function modale_file_listener_handler() {
-        /* opening file_selection_modale throw useless error */
+        /* opening file_selection_modale throw useless error, just handling it */
         if(!target.files) { return }
 
         const wrapper = document.querySelector('.modale__add-works--photo-wrapper');
@@ -327,6 +328,7 @@ function modale_add_works_file_switch(reset = false) {
         [...wrapper.children].find(child => child.tagName.toLowerCase() === 'img').remove();
         document.querySelector('#file_input').value = '';
     }
+    /* switch between <img> or <imput type='file'> */
     [...wrapper.children].map(child => child.classList.toggle('hidden'));
 }
 
@@ -346,7 +348,7 @@ async function modale_add_works_submit() {
     const formData = new FormData();
     formData.append('image', file, file.name);
     formData.append('title', title);
-    formData.append('category', category.split('_')[1]);
+    formData.append('category', category);
 
     return await modale_add_works_add(formData);
 }
@@ -401,18 +403,37 @@ async function fetch_add_work(formData) {
 }
 
 
-/* all modales */
+/* ALL MODALES */
 
 function modale_close() {
+    /* clear all modales */
     document.querySelectorAll('.modale').forEach(modale => { modale.remove() })
 }
 
 async function galleries_update() {
+    /* update gallery then gallery_modale after succefull fetch (add or delete) */
     import(module_gallery)
         .then(__ => __.gallery_display())
         .then(__ => modale_gallery_display())
 }
 
 function fetch_failed() {
-    /* under construction */
+    /* display error_msg after a failed fetch (add or delete) */
+    const modale = [...document.querySelectorAll('.modale ')].filter(modale => !modale.classList.value.includes('hidden'))[0];
+    const error_msg = document.createElement('p');
+    error_msg.className = 'msg--error';
+    modale.querySelector('.modale__wrapper').appendChild(error_msg);
+
+    if(modale.id === 'modale_add_works') {
+        error_msg.innerText = "Echec lors de l'ajout du projet !";
+        Object.assign(error_msg.style, {'top': '300px', 'left': '0', 'width': '100%'});
+    }
+    if(modale.id === 'modale_gallery') {
+        error_msg.innerText = "Echec lors de la suppression du projet !";
+        Object.assign(error_msg.style, {'top': '90px', 'left': '0', 'width': '100%'});
+    }
+    
+    setTimeout(() => {
+        error_msg.remove()
+    }, 2000)
 }

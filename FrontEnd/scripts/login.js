@@ -9,12 +9,12 @@ export const login_listener = (async function () {
 
         /*test with regex user_id and password => return true / false */
         const values_test_result = values_test();
-        console.log('values_test_result', values_test_result)
         if(!values_test_result) {
             return auth_failed({ msg: 'Erreur de saisie !' });
         }
 
-        /* fetch user / pass => return response / false */
+        /* fetch (user / pass) => return (response / false) */
+        /* fetch failed / error are handle in fetch_auth() */
         let response = await fetch_auth();
         if(response) {
             sessionStorage.setItem('jwt', response.token);
@@ -31,11 +31,10 @@ export const login_listener = (async function () {
         const email_tested = email_pattern.test(email);
 
         const password = document.getElementById('password');
-        /* under construction */
+        /* under construction, pass regex don't works */
         const password_pattern = new RegExp('(?=.*[a-z])(?=.*[A-Z])');
         const password_tested = password_pattern.test(password);
 
-        console.log(email_tested, password_tested)
         return (email_tested && password_tested) ? true : false;
     }
 
@@ -62,6 +61,7 @@ export const login_listener = (async function () {
             response = await response.json();
 
             if(response.message || response.error) { return auth_failed({ msg: "Erreur dans l’identifiant ou le mot de passe !" }) }
+            /* auth ok => sessionStorage token then redirect index.html */
             sessionStorage.setItem('jwt', response.token);
             const redirection_url = window.location.href.replace('#contact', '');
             window.location.href = redirection_url.replace('html/login', 'index');
@@ -75,6 +75,7 @@ export const login_listener = (async function () {
 
     function auth_failed(response_failed) {
 
+        /* display simple error_msg, deleted after timeout  */
         const main = document.querySelector('.login__main');
         const msg_error = document.createElement('div');
         msg_error.className = 'msg--error  font--lighter';

@@ -1,21 +1,14 @@
-const module_modale = './modale.js';
+import { modale_init } from "./modale.js";
 const module_update = './update.js';
 
 export const edit_mode_init = (function() {
     banner_init();
     btns_modifier_init();
-
-    /* delete and add works reset on window.unload */
-    window.addEventListener('beforeunload', () => {
-        (sessionStorage['delete']) ? sessionStorage.removeItem('delete') : null;
-        (sessionStorage['add']) ? sessionStorage.removeItem('add') : null;
-        (window.add_works) ? delete window.add_works : null;
-    })
 })()
 
 
 
-/* create banner, got <btn_publier> == update (apply modales changes with fetch) */
+/* create banner, to be implemented */
 function banner_init() {
 
     /* create all elements in <banner> */
@@ -55,8 +48,8 @@ function banner_init() {
 }
 
 async function banner_listener() {
-    // document.querySelector('#banner_publier').addEventListener('click', () => { import(module_update).then(__ => __.update_init()) })
     /* to be implemented */
+    null;
 }
 
 
@@ -116,17 +109,12 @@ function btns_modifier_init() {
 }
 
 async function bnts_modifier_listener() {
-
+    /* get all <btn_modifier> then listen 'click' */
     [...document.querySelectorAll('.edit__bnt-modifier--wrapper')].map(btn => {
         btn.addEventListener('click', () => {
-
             if(btn.id === 'intro_figure') { null } /* to be implemented */
             if(btn.id === 'intro_title') { null } /* to be implemented */
-            if(btn.id === 'portfolio_title') {
-                /* import once but use it each 'click' */
-                import(module_modale)
-                    .then(__ => __.modale())
-            }
+            if(btn.id === 'portfolio_title') { modale_init() }
         })
     })
 }

@@ -5,6 +5,7 @@ export const filters_init = (() => {
     /* figures use in filter_listener() */
     let figures = [...gallery.children];
 
+    /* get all categories and add 'tout' => filters.innerText */
     const categories = [...new Set(figures.map(figure => figure.getAttribute('data-category')))];
     categories.unshift('tous');
 
